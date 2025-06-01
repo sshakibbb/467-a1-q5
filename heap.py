@@ -77,6 +77,9 @@ class MinHeap:
                 index = i
                 break 
         
+        if(self.heap[index].f < new_f):
+            return
+        
         #update it
         self.heap[index].f = new_f
         self.heap[index].g = new_g 
