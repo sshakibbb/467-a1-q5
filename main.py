@@ -84,12 +84,40 @@ def valid_state(state):
 
     return inversions % 2 == 0
 
+def generate_neighbours(state):
+    neighbours = []
+    moves = { (0,1), (0,-1), (1,0), (-1,0) }
+
+    for i in range(3):
+        for j in range(3):
+            if(state[i][j]==0):
+                x,y = j,i
+
+
+    for move in moves:
+        temp_state = deepcopy(state)
+
+        new_x = x + move[1]
+        new_y = y + move[0]
+
+        if(0<= new_y < 3 and 0<= new_x < 3):
+            temp = temp_state[y][x]
+            temp_state[y][x] = temp_state[new_y][new_x]
+            temp_state[new_y][new_x] = temp
+
+            neighbours.append(temp_state)
+
+
+
+
+    return neighbours
+
 
 def a_star_search(initial_state, heuristic):
 
     start_node = HeapNode(heuristic(initial_state),0,initial_state,[])
     frontier = MinHeap(start_node)
-    explored = []
+    explored = set()
 
     while(not frontier.isempty()):
         removed_heap_node = frontier.delete()
@@ -98,18 +126,26 @@ def a_star_search(initial_state, heuristic):
         g_value = removed_heap_node.g + 1
 
 
-        explored.append(str(state.state))
+        explored.add(str(state))
 
         if(goal_state(state)):
-            path.append(str(state))
-            return path
+            
+            return path + [str(state)]
         
-        #else:
-            # generate neighbours of the state
-            # for each neighbour state
-            # if not in frontier or explored, insert the state
-            # if in frontier (heap), decrease the key of neighbour?
+        else:
+            neighbour_path = path + [str(state)]
 
+            for neighbour in generate_neighbours(state):
+                if not frontier.search_node(neighbour) and str(neighbour) not in explored:
+                    f_value = g_value+heuristic(neighbour)
+                    hnode = HeapNode(f_value,g_value,neighbour, neighbour_path)
+                    frontier.insert(hnode)
+
+                elif frontier.search_node(neighbour):
+                    f_value = g_value+heuristic(neighbour)
+                    frontier.decrease_key(neighbour,f_value,g_value,neighbour_path)
+
+    return None
 
 def main():
 
