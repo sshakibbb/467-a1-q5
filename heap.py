@@ -62,6 +62,8 @@ class MinHeap:
     def search_node(self,state):
 
         for i in range(len(self.heap)):
+            #print(f"Comparing heap state type: {type(self.heap[i].state)} vs input state type: {type(state)}")
+
             if(self.heap[i].state == state):
                 return True
             
