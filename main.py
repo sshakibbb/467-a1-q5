@@ -62,7 +62,31 @@ def heuristic_two(state):
     
     return distance
 
-#def heuristic_three(state):
+# heuristic three is an implementation of Chebyshev distance
+
+def heuristic_three(state):
+
+    # similar to manhattan distance, we initialize a dictionary for storing each puzzle piece
+    positions = {}
+    distance = 0 # initialize total distance variable
+
+    # fill the goal state coordinates to understand where each piece should go for distance computations
+    for i in range(3):
+        for j in range(3):
+            positions[goal[i][j]] = (j, i)
+
+    for i in range(3):
+        for j in range(3):
+            value = state[i][j]
+            gx, gy = positions[value]
+
+            dist_x = abs(gx - j) # horizontal distance
+            dist_y = abs(gy - i) # vertical distance
+
+            # distance is then calculated as the maximum of either the horizontal and vertical distances
+            distance += max(dist_x, dist_y)
+
+    return distance
 
 # generates a valid starting state for the 8-puzzle
 def gen_state():
@@ -208,6 +232,8 @@ def a_star_search(initial_state, heuristic):
 #main function, tests the heuristics and summarizes results
 def main():
 
+    # initialize variables to track averages for each heuristic
+
     h1_avg_expands = 0
     h1_avg_steps = 0
 
@@ -217,11 +243,15 @@ def main():
     h3_avg_expands = 0
     h3_avg_steps = 0
 
+    # simulate 100 puzzles
+
     for i in range(100):
         initial_state = gen_state()
 
+        # perform a star search for each heuristic, storing the total steps and expansions
         h1s,h1e = a_star_search(deepcopy(initial_state), heuristic_one)
         h2s,h2e = a_star_search(deepcopy(initial_state), heuristic_two)
+        h3s,h3e = a_star_search(deepcopy(initial_state), heuristic_three)
         #same for h3
 
         h1_avg_expands += h1e
@@ -229,7 +259,12 @@ def main():
 
         h2_avg_expands += h2e
         h2_avg_steps += len(h2s)
+
+        h3_avg_expands += h3e
+        h3_avg_steps += len(h3s)
     
+    # divide average variables by 100 (since we are simulating the algorithm across 100 puzzles)
+
     h1_avg_expands /=100
     h1_avg_steps /=100
 
@@ -238,13 +273,15 @@ def main():
 
     h3_avg_expands /=100
     h3_avg_steps /=100 
-    print(f"""
-H1 avg steps = {h1_avg_steps}
-H1 avg expands = {h1_avg_expands}
-H2 avg steps = {h2_avg_steps}
-H2 avg expands = {h2_avg_expands}
 
-""")
+
+    # print table of results, starting with the headers
+    print(f"{'Puzzle Type':<20} {'Heuristic':<20} {'Average Steps to Solution':<30} {'Average Nodes Expanded':<30}")
+
+    # print each heuristic's results
+    print(f"{'8-puzzle':<20} {'h1':<20} {h1_avg_steps:<30} {h1_avg_expands:<30}")
+    print(f"{'8-puzzle':<20} {'h2':<20} {h2_avg_steps:<30} {h2_avg_expands:<30}")
+    print(f"{'8-puzzle':<20} {'h3':<20} {h3_avg_steps:<30} {h3_avg_expands:<30}")
 
 
 """"""
