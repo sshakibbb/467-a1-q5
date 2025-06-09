@@ -86,7 +86,7 @@ def heuristic_three(state):
             # distance is then calculated as the maximum of either the horizontal and vertical distances
             distance += max(dist_x, dist_y)
 
-    return distance
+    return 2*distance
 
 # generates a valid starting state for the 8-puzzle
 def gen_state():
