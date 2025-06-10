@@ -1,9 +1,8 @@
-# Group 16 Assignment 1 Question 5 in CP467
-### Written answers which are also included in our PDF submission.
+Group 16 Assignment 1 Question 5 in CP467
+Written answers which are also included in our PDF submission.
 
-<br>
 
-**Selection and explanation of h3**
+Selection and explanation of h3
 
 In our A* algorithm approach for the 8-puzzle, we decided to utilize Chebyshev Distance as our third heuristic. We decided to pick this one as we were curious in observing the efficiency improvements over Hamming and Manhattan heuristics mentioned in the research paper provided by the professor.
 
@@ -22,9 +21,9 @@ a + b <= 2 * max(a,b) and we can see it hold in some examples:
 
 This means that by doubling the Chebyshev Distance’s result, we always achieve a more dominant function. This was reflected in our space complexity observations, where Manhattan Distance took about 1500 node expansions, Chebyshev took 5400, and Chebyshev doubled took about 1200.
 
-<br>
 
-**Analysis of heuristic functions**
+
+Analysis of heuristic functions
 
 We can observe sample output (attached also in doc) for implementation of the A* algorithm using our three heuristics. While observing these across 100 different puzzles, we can look at the averages that were computed above and make a couple observations. Heuristic 3, which was the modified Chebyshev Distance method, had the lowest number of average nodes expanded, giving us the best efficiency in space complexity. 
 
