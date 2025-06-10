@@ -1,5 +1,5 @@
 # Group 16 Assignment 1 Question 5 in CP467
-### Written questions which are also included in our PDF submission.
+### Written questions can be found in Analysis.md to stay organized, and can also be found in our PDF submission.
 
 <br>
 
