@@ -1,0 +1,218 @@
+{
+  "name": "group13_a1_bfs_bonus_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const graph = [\n    { \"id\": \"A\", \"neighbors\": [\"B\", \"C\"] },\n    { \"id\": \"B\", \"neighbors\": [\"D\", \"E\"] },\n    { \"id\": \"C\", \"neighbors\": [\"F\"] },\n    { \"id\": \"D\", \"neighbors\": [] },\n    { \"id\": \"E\", \"neighbors\": [] },\n    { \"id\": \"F\", \"neighbors\": [] }\n    ];\nconst target = \"F\";\nconst visited = [];\n//Queue for BFS search with start node id = A\nconst queue = [(\"A\")];\nreturn [\n    {\n      json: {\n        graph,\n        target,\n        visited,\n        queue\n      }\n    }\n  ];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "c2de3588-1c86-47d7-9bae-fa4e3a2f0581",
+      "name": "Initialize State"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "204b2739-3530-49d4-b0e5-6704779cbb69",
+      "name": "Start Node"
+    },
+    {
+      "parameters": {
+        "jsCode": "//Define inputs more simply\nconst graph = items[0].json.graph;\nconst target = items[0].json.target;\nlet visited = items[0].json.visited;\nlet queue = items[0].json.queue;\n\n//Check for completion\nif (queue.length === 0){\n    return [\n        {\n            json: {\n                status: \"not_found\",\n                message: \"Target not found.\",\n                visited\n            }\n        }\n    ];\n\n}\n\n//Process current node\n//Dequeue first node\nconst current = queue.shift();\n\n//Check to make sure no duplicate\nif (!visited.includes(current)){\n    //Add to visited list\n    visited.push(current);\n}\n//Check for target\nif (current === target){\n    return [\n        {\n            json: {\n                status: \"found\",\n                message: \"Target found.\",\n                current,\n                visited\n            }\n        }\n    ];\n}\n\n//Explore neighbours\n//Find node in graph\nconst current_found = graph.find(node => node.id === current);\n//Get neighbours if any\nlet neighbors;\nif (current_found) {\n  neighbors = current_found.neighbors;\n} else {\n  neighbors = [];\n}\n//Enqueue neighbours if not already in visited or queue\nfor (let neighbor of neighbors){\n    if (!visited.includes(neighbor) && !queue.includes(neighbor)){\n        queue.push(neighbor);\n    }\n}\n//Continue search if target was not found\nreturn [\n    {\n        json: {\n            queue,\n            visited,\n            graph,\n            target,\n            status: \"continue\"\n        }\n    }\n\n];\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "0bb986c8-a23a-4ab8-97a5-de84e24cffe3",
+      "name": "BFS Step"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1511cc83-2bb9-4d00-900e-ce0958da24d9",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "found",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "872383d9-ada5-4884-8f15-0fd1e098bd1c",
+      "name": "Is Target Found?"
+    },
+    {
+      "parameters": {
+        "jsCode": "//store input\nconst visited = items[0].json.visited;\nconst found = items[0].json.current_found;\n//return json with node found info\nreturn [\n    {\n        json:{\n            message: \"Target node found!\",\n            visited_list: visited,\n            target: found\n\n        }\n    }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        620,
+        -100
+      ],
+      "id": "bc968f77-1499-4346-8f0a-9a04741d1f3b",
+      "name": "Target Found"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f3a657eb-7e94-4c64-b5dc-b250875771d7",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "continue",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        100
+      ],
+      "id": "e91ad55c-da10-4513-a7a0-17026c8a4524",
+      "name": "Should Continue?"
+    },
+    {
+      "parameters": {
+        "jsCode": "//store input\nconst visited = items[0].json.visited;\nconst queue = items[0].json.queue;\n//return json with node not found info\nreturn [\n    {\n        json:{\n            message: \"Target node was not found.\",\n            visited_list: visited,\n            remaining_queue: queue\n\n        }\n    }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        860,
+        200
+      ],
+      "id": "44c11212-5295-4ba7-9ce5-c40265f81313",
+      "name": "Target Not Found"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Initialize State": {
+      "main": [
+        [
+          {
+            "node": "BFS Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Node": {
+      "main": [
+        [
+          {
+            "node": "Initialize State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BFS Step": {
+      "main": [
+        [
+          {
+            "node": "Is Target Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Target Found?": {
+      "main": [
+        [
+          {
+            "node": "Target Found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Should Continue?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Continue?": {
+      "main": [
+        [
+          {
+            "node": "BFS Step",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Target Not Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "36d9585f-3d6b-42dc-8ab7-8692a7d029be",
+  "meta": {
+    "instanceId": "df203c4c017a077d3cb1b366aae77b8a020e8dcfe7cad40271e43409c824b35a"
+  },
+  "id": "iDIeIUzgEA8nu5XE",
+  "tags": []
+}

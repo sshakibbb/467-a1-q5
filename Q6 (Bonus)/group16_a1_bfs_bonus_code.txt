@@ -1,0 +1,133 @@
+//-----------------Initialize State code-----------------
+
+const graph = [
+    { "id": "A", "neighbors": ["B", "C"] },
+    { "id": "B", "neighbors": ["D", "E"] },
+    { "id": "C", "neighbors": ["F"] },
+    { "id": "D", "neighbors": [] },
+    { "id": "E", "neighbors": [] },
+    { "id": "F", "neighbors": [] }
+    ];
+const target = "F";
+const visited = [];
+//Queue for BFS search with start node id = A
+const queue = [("A")];
+return [
+    {
+      json: {
+        graph,
+        target,
+        visited,
+        queue
+      }
+    }
+  ];
+
+//-----------------BFS Step code-----------------
+
+//Define inputs more simply
+const graph = items[0].json.graph;
+const target = items[0].json.target;
+let visited = items[0].json.visited;
+let queue = items[0].json.queue;
+
+//Check for completion
+if (queue.length === 0){
+    return [
+        {
+            json: {
+                status: "not_found",
+                message: "Target not found.",
+                visited
+            }
+        }
+    ];
+
+}
+
+//Process current node
+//Dequeue first node
+const current = queue.shift();
+
+//Check to make sure no duplicate
+if (!visited.includes(current)){
+    //Add to visited list
+    visited.push(current);
+}
+//Check for target
+if (current === target){
+    return [
+        {
+            json: {
+                status: "found",
+                message: "Target found.",
+                current,
+                visited
+            }
+        }
+    ];
+}
+
+//Explore neighbours
+//Find node in graph
+const current_found = graph.find(node => node.id === current);
+//Get neighbours if any
+let neighbors;
+if (current_found) {
+  neighbors = current_found.neighbors;
+} else {
+  neighbors = [];
+}
+//Enqueue neighbours if not already in visited or queue
+for (let neighbor of neighbors){
+    if (!visited.includes(neighbor) && !queue.includes(neighbor)){
+        queue.push(neighbor);
+    }
+}
+//Continue search if target was not found
+return [
+    {
+        json: {
+            queue,
+            visited,
+            graph,
+            target,
+            status: "continue"
+        }
+    }
+
+];
+
+//-----------------Target Found code-----------------
+
+//store input
+const visited = items[0].json.visited;
+const found = items[0].json.current_found;
+//return json with node found info
+return [
+    {
+        json:{
+            message: "Target node found!",
+            visited_list: visited,
+            target: found
+
+        }
+    }
+]
+
+//-----------------Target Not Found code-----------------
+
+//store input
+const visited = items[0].json.visited;
+const queue = items[0].json.queue;
+//return json with node not found info
+return [
+    {
+        json:{
+            message: "Target node was not found.",
+            visited_list: visited,
+            remaining_queue: queue
+
+        }
+    }
+]
