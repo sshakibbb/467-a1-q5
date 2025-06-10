@@ -20,15 +20,6 @@ def state_to_tuple(state):
 def goal_state(state):
     return state==goal 
 
-#converts a state to 1D representation for easier comparison
-def convert_to_1D(state):
-    list = []
-    for row in state:
-        for element in row:
-            list.append(element)
-    
-    return list
-
 #heuristic one determines the number of misplaced tiles
 def heuristic_one(state):
     count  = 0
